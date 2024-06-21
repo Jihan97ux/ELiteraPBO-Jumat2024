@@ -3,18 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/tambah/TambahMateriperClass.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/edit/Edit.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/hapus/Hapus.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/edit/EditItem.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/HasilCari.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/admin/FrameGUIAdmin.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/login/loginAs.java</file>
+            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/TampilanKonten.java</file>
+            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/tambah/SessionManager.java</file>
             <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/FrameGUI.java</file>
             <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/TampilanMateri.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/edit/EditDocVid.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/tambah/TambahDocument.java</file>
-            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/tambah/Tambah.java</file>
+            <file>file:/C:/Users/user/tugas/Semester%20IV/ELitera/src/elitera/login/SignAsStudent.java</file>
         </group>
     </open-files>
 </project-private>

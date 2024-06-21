@@ -390,7 +390,6 @@ private String Stud_role;
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
        // Ambil nilai dari form
-    String Teach_email = email.getText();
     String Stud_email = email.getText();
     String Stud_firstname = firstname.getText();
     String Stud_lastname = lastname.getText();
@@ -419,7 +418,7 @@ private String Stud_role;
             JOptionPane.showMessageDialog(this, "Email sudah terdaftar, ganti email baru!");
             return;
         }
-            if(isEmailinAdmin(Teach_email)) {
+            if(isEmailinAdmin(Stud_email)) {
             JOptionPane.showMessageDialog(this, "Email tidak valid, ganti email baru!");
             return;  
             }
@@ -436,7 +435,7 @@ private String Stud_role;
             
             ps.executeUpdate();
             JOptionPane.showMessageDialog(this, "Data berhasil disimpan!");
-            new FrameGUI().setVisible(true);
+            new loginAs().setVisible(true);
             this.dispose();
         } catch (SQLException ex) {
             Logger.getLogger(SignAsStudent.class.getName()).log(Level.SEVERE, null, ex);

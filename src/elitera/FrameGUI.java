@@ -10,6 +10,7 @@ import static elitera.DBConnectionManager.getConnection;
 import elitera.login.SignAsStudent;
 import elitera.login.loginAs;
 import elitera.login.loginPage;
+import elitera.tambah.SessionManager;
 import elitera.tampilanBaru.Pilihan;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -38,6 +39,7 @@ import javax.swing.border.EmptyBorder;
  * @author user
  */
 public class FrameGUI extends javax.swing.JFrame {
+    private String materi_kursus_id;
 
     /**
      * Creates new form FrameGUI
@@ -103,8 +105,35 @@ public class FrameGUI extends javax.swing.JFrame {
         subjectButton.setHorizontalTextPosition(JButton.CENTER);
         subjectButton.setVerticalTextPosition(JButton.BOTTOM); 
         subjectButton.addActionListener(new java.awt.event.ActionListener() {
+            private String materi_kursus_id;
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JOptionPane.showMessageDialog(null, "You clicked on: " + subject);
+                String subName = subjectButton.getText();
+                
+                Connection con = null;
+                
+                try{
+                    con = getConnection();
+                    String sql = "SELECT Sub_id FROM subject_tbl WHERE Sub_name = ?";
+                    PreparedStatement pst = con.prepareStatement(sql);
+                    pst.setString(1, subName);
+
+                    ResultSet rs = pst.executeQuery();
+                    
+                    if(rs.next()) {
+                        this.materi_kursus_id = rs.getString("Sub_id");
+                        System.out.println(materi_kursus_id);
+                        SessionManager.setKursusId(materi_kursus_id);
+                        TampilanMateri frame = new TampilanMateri(); // Buat objek FrameGUI
+                        ArrayList<String> materis = frame.getMateriBySubject(materi_kursus_id); // Dapatkan daftar mata pelajaran
+                        frame.displayMateri(materis); // Tampilkan subjek-subjek di FrameGUI
+                        frame.setVisible(true);
+                    }
+                    con.close();
+                } catch(Exception e){
+                   JOptionPane.showMessageDialog(null, "gagal" + subject); 
+                }
+                
             }
         });
         buttonPanel.add(subjectButton);
@@ -228,20 +257,20 @@ class GradientButton extends JButton {
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78))
+                .addGap(81, 81, 81))
         );
         kGradientPanel1Layout.setVerticalGroup(
             kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kGradientPanel1Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kGradientPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
                 .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -266,7 +295,7 @@ class GradientButton extends JButton {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(kGradientPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
@@ -276,7 +305,7 @@ class GradientButton extends JButton {
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -334,7 +363,7 @@ class GradientButton extends JButton {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FrameGUI().setVisible(true);
-                new Pilihan().setVisible(true);
+                //new Pilihan().setVisible(true);
             }
         });
     }

@@ -5,12 +5,23 @@
  */
 package elitera.tambah;
 
+import static elitera.DBConnectionManager.getConnection;
+import elitera.admin.FrameGUIAdmin;
+import elitera.login.loginPageAdmin;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author user
  */
 public class TambahMateri extends javax.swing.JFrame {
-
+private final String currentCourseId = FrameGUIAdmin.currentCourseId;
     /**
      * Creates new form TambahMateri
      */
@@ -69,6 +80,11 @@ public class TambahMateri extends javax.swing.JFrame {
         jButton6.setBackground(new java.awt.Color(51, 51, 255));
         jButton6.setForeground(new java.awt.Color(255, 153, 51));
         jButton6.setText("Tambahkan");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout kGradientPanel7Layout = new javax.swing.GroupLayout(kGradientPanel7);
         kGradientPanel7.setLayout(kGradientPanel7Layout);
@@ -92,14 +108,11 @@ public class TambahMateri extends javax.swing.JFrame {
         kGradientPanel7Layout.setVerticalGroup(
             kGradientPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(kGradientPanel7Layout.createSequentialGroup()
+                .addGap(43, 43, 43)
                 .addGroup(kGradientPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(kGradientPanel7Layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(kGradientPanel7Layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(jLabel21)))
-                .addGap(18, 18, 18)
+                    .addComponent(jLabel21)
+                    .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
                 .addGroup(kGradientPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextField22, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22))
@@ -146,7 +159,81 @@ public class TambahMateri extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    public boolean isMateriExist(String id) {
+        boolean isExist = false;
+        Connection con = getConnection();
+        PreparedStatement ps;
+        ResultSet rs;
+
+        try {
+            ps = con.prepareStatement("SELECT * FROM Materi_tbl WHERE Materi_id = ?");
+            ps.setString(1, id);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                isExist = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TambahMateri.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return isExist;
+    }
+
+    public boolean verifyData() {
+        if (jTextField21.getText().equals("") || jTextField22.getText().equals("") || jTextArea1.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "One or more fields are empty");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        System.out.println("Current course id: " + currentCourseId);
+        String id = jTextField21.getText();
+        String title = jTextField22.getText();
+        String sub_id = currentCourseId;
+        String description = jTextArea1.getText();
+
+        System.out.println("Sub_id: " + sub_id);
+
+        // check if fields empty
+        if (id.equals("") || title.equals("") || description.equals("")) {
+            JOptionPane.showMessageDialog(null, "Mohon isi dengan lengkap");
+            return;
+        }
+
+        if (verifyData()) {
+            if (!isMateriExist(id)) {
+                Connection con = getConnection();
+                PreparedStatement ps;
+
+                try {
+                    ps = con.prepareStatement("INSERT INTO Materi_tbl (Materi_id, Materi_title, Materi_sub_id, Materi_desc) VALUES (?, ?, ?, ?)");
+                    ps.setString(1, id);
+                    ps.setString(2, title);
+                    ps.setString(3, sub_id);
+                    ps.setString(4, description);
+
+                    if (ps.executeUpdate() > 0) {
+                        JOptionPane.showMessageDialog(null, "New materi added");
+                        new loginPageAdmin().setVisible(true);
+                        this.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to add new materi");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(TambahMateri.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Materi already exists");
+            }
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jTextField21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField21ActionPerformed
         // TODO add your handling code here:

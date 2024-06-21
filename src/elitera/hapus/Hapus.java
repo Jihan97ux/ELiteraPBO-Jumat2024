@@ -5,6 +5,18 @@
  */
 package elitera.hapus;
 
+import elitera.DBConnectionManager;
+import static elitera.DBConnectionManager.getConnection;
+import elitera.login.SignAsStudent;
+import elitera.login.loginPageAdmin;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author user
@@ -30,11 +42,7 @@ public class Hapus extends javax.swing.JFrame {
         kGradientPanel1 = new keeptoo.KGradientPanel();
         kGradientPanel5 = new keeptoo.KGradientPanel();
         jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jTextField14 = new javax.swing.JTextField();
-        jTextField15 = new javax.swing.JTextField();
-        jTextField16 = new javax.swing.JTextField();
+        idfield = new javax.swing.JTextField();
         jButton4 = new javax.swing.JButton();
         jLabel18 = new javax.swing.JLabel();
 
@@ -47,68 +55,40 @@ public class Hapus extends javax.swing.JFrame {
         kGradientPanel5.setkStartColor(new java.awt.Color(51, 51, 255));
 
         jLabel14.setFont(new java.awt.Font("Bookman Old Style", 1, 14)); // NOI18N
-        jLabel14.setText("Materi ID         :");
-
-        jLabel15.setFont(new java.awt.Font("Bookman Old Style", 1, 14)); // NOI18N
-        jLabel15.setText("Document ID   : ");
-
-        jLabel16.setFont(new java.awt.Font("Bookman Old Style", 1, 14)); // NOI18N
-        jLabel16.setText("Video ID         :");
-
-        jTextField15.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField15ActionPerformed(evt);
-            }
-        });
+        jLabel14.setText(" ID         :");
 
         jButton4.setBackground(new java.awt.Color(51, 51, 255));
         jButton4.setForeground(new java.awt.Color(255, 153, 51));
         jButton4.setText("Hapus");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout kGradientPanel5Layout = new javax.swing.GroupLayout(kGradientPanel5);
         kGradientPanel5.setLayout(kGradientPanel5Layout);
         kGradientPanel5Layout.setHorizontalGroup(
             kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(kGradientPanel5Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kGradientPanel5Layout.createSequentialGroup()
+                .addGap(0, 135, Short.MAX_VALUE)
+                .addComponent(jLabel14)
+                .addGap(18, 18, 18)
                 .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(kGradientPanel5Layout.createSequentialGroup()
-                        .addGap(129, 129, 129)
-                        .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(kGradientPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel16)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(kGradientPanel5Layout.createSequentialGroup()
-                                .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel15)
-                                    .addComponent(jLabel14))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(kGradientPanel5Layout.createSequentialGroup()
-                        .addGap(209, 209, 209)
-                        .addComponent(jButton4)))
-                .addContainerGap(135, Short.MAX_VALUE))
+                    .addComponent(jButton4)
+                    .addComponent(idfield, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(170, 170, 170))
         );
         kGradientPanel5Layout.setVerticalGroup(
             kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(kGradientPanel5Layout.createSequentialGroup()
-                .addGap(83, 83, 83)
+                .addGap(128, 128, 128)
                 .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(idfield, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
-                .addGap(18, 18, 18)
-                .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel15))
-                .addGap(21, 21, 21)
-                .addGroup(kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16))
-                .addGap(39, 39, 39)
+                .addGap(52, 52, 52)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
 
         jLabel18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/kursus.PNG"))); // NOI18N
@@ -145,11 +125,88 @@ public class Hapus extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField15ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField15ActionPerformed
+    public boolean isIdinMateri(String id) {
+    Connection con = DBConnectionManager.getConnection();
+    if (con != null) {
+        try {
+            String sql = "SELECT * FROM materi_tbl WHERE materi_id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); 
+        } catch (SQLException ex) {
+            Logger.getLogger(SignAsStudent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    return false;
+}
+    public boolean isIdinContent(String id) {
+    Connection con = DBConnectionManager.getConnection();
+    if (con != null) {
+        try {
+            String sql = "SELECT * FROM content_tbl WHERE content_id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); 
+        } catch (SQLException ex) {
+            Logger.getLogger(SignAsStudent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    return false;
+}
+    
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+     String id = idfield.getText();
+     Connection con = getConnection();
+    if (con != null) {
+        try {
+            
+            if (isIdinMateri(id)) {
+            String query = "DELETE FROM materi_tbl WHERE materi_id = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setString(1, id);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Materi berhasil dihapus!");
+                    new loginPageAdmin().setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "ID Materi tidak ditemukan.");
+                }
+        }
+            if(isIdinContent(id)) {
+            String query = "DELETE FROM content_tbl WHERE content_id = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setString(1, id);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Konten berhasil dihapus!");
+                    new loginPageAdmin().setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "ID Konten tidak ditemukan.");
+                }
+            }
+        } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Gagal menghapus kursus!");
+            } finally {
+                try {
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -187,14 +244,10 @@ public class Hapus extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField idfield;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JTextField jTextField14;
-    private javax.swing.JTextField jTextField15;
-    private javax.swing.JTextField jTextField16;
     private keeptoo.KGradientPanel kGradientPanel1;
     private keeptoo.KGradientPanel kGradientPanel5;
     // End of variables declaration//GEN-END:variables

@@ -8,7 +8,14 @@ package elitera.admin;
 import elitera.DBConnectionManager;
 import static elitera.DBConnectionManager.getConnection;
 import elitera.FrameGUI;
+import elitera.edit.Edit;
+import elitera.edit.EditKursus;
+import elitera.hapus.Hapus;
+import elitera.login.loginPageAdmin;
+import elitera.tambah.SessionManager;
+import elitera.tambah.Tambah;
 import elitera.tambah.TambahKursus;
+import elitera.tambah.TambahMateri;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,6 +49,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrameGUIAdmin extends javax.swing.JFrame {
     public String sub;
+    public static String currentCourseId;
+    public static String currentCourseTeach;
+    public static String currentCourseJurusan;
     /**
      * Creates new form FrameGUIAdmin
      */
@@ -107,9 +117,31 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
         radioButton.setForeground(Color.BLACK);
         radioButton.setFont(radioFont);
         radioButton.addActionListener(new ActionListener() {
+            private String materi_add_id;
             public void actionPerformed(ActionEvent evt) {
-                //JOptionPane.showMessageDialog(null, "You selected: " + subject);
+                JOptionPane.showMessageDialog(null, "You clicked on: " + subject);
                 sub = subject;
+                String subName = radioButton.getText();
+                
+                Connection con = null;
+                
+                try{
+                    con = getConnection();
+                    String sql = "SELECT * FROM subject_tbl WHERE Sub_name = ?";
+                    PreparedStatement pst = con.prepareStatement(sql);
+                    pst.setString(1, subName);
+
+                    ResultSet rs = pst.executeQuery();
+                    
+                    if(rs.next()) {
+                        currentCourseId = rs.getString("Sub_id");
+                        currentCourseTeach = rs.getString("Sub_teach");
+                        currentCourseJurusan = rs.getString("Sub_jurusan");
+                    }
+                    con.close();
+                } catch(Exception e){
+                   JOptionPane.showMessageDialog(null, "gagal" + subject); 
+                }
             }
         });
         group.add(radioButton);
@@ -139,15 +171,16 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton7 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -210,6 +243,20 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
         jButton6.setBackground(new java.awt.Color(0, 102, 255));
         jButton6.setForeground(new java.awt.Color(255, 153, 51));
         jButton6.setText("Edit Kursus");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton11.setBackground(new java.awt.Color(255, 51, 51));
+        jButton11.setForeground(new java.awt.Color(255, 153, 51));
+        jButton11.setText("Hapus Kursus");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -224,26 +271,28 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
                         .addGap(72, 72, 72)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(jButton6))
-                            .addComponent(jButton7))))
-                .addContainerGap(67, Short.MAX_VALUE))
+                        .addGap(48, 48, 48)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton7)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jButton11)
+                                .addComponent(jButton6)))))
+                .addContainerGap(71, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 222, Short.MAX_VALUE)
                 .addComponent(jButton4)
-                .addGap(72, 72, 72)
+                .addGap(61, 61, 61)
                 .addComponent(jButton7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton6)
-                .addGap(72, 72, 72))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton11)
+                .addGap(45, 45, 45))
         );
 
         jPanel4.setBackground(new java.awt.Color(51, 102, 255));
@@ -276,16 +325,12 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
 
         jButton2.setBackground(new java.awt.Color(255, 153, 51));
         jButton2.setForeground(new java.awt.Color(51, 51, 255));
-        jButton2.setText("Video");
+        jButton2.setText("Video/Document");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
-
-        jButton3.setBackground(new java.awt.Color(255, 153, 51));
-        jButton3.setForeground(new java.awt.Color(51, 51, 255));
-        jButton3.setText("Documents");
 
         jButton8.setBackground(new java.awt.Color(255, 153, 51));
         jButton8.setForeground(new java.awt.Color(51, 51, 255));
@@ -299,6 +344,11 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
         jButton9.setBackground(new java.awt.Color(255, 153, 51));
         jButton9.setForeground(new java.awt.Color(51, 51, 255));
         jButton9.setText("Edit");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         jButton10.setBackground(new java.awt.Color(255, 51, 0));
         jButton10.setForeground(new java.awt.Color(51, 51, 255));
@@ -306,6 +356,15 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton10ActionPerformed(evt);
+            }
+        });
+
+        jButton12.setBackground(new java.awt.Color(255, 153, 51));
+        jButton12.setForeground(new java.awt.Color(51, 51, 255));
+        jButton12.setText("Materi");
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
             }
         });
 
@@ -326,9 +385,9 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton12))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 613, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(29, 29, 29))))
         );
@@ -338,7 +397,7 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
                 .addContainerGap(45, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(jButton12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(165, 165, 165)
@@ -390,11 +449,52 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        if (sub == null || sub.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Pilih kursus terlebih dahulu!");
+        return;
+    }
+    
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+        con = getConnection();
+        String sql = "SELECT c.content_id, c.content_desc, c.content_url, m.materi_id, s.sub_id " +
+                     "FROM content_tbl c " +
+                     "JOIN materi_tbl m ON c.content_materi_id = m.materi_id " +
+                     "JOIN subject_tbl s ON m.materi_sub_id = s.sub_id " +
+                     "WHERE s.sub_name = ?";
+        ps = con.prepareStatement(sql);
+        ps.setString(1, sub);
+        rs = ps.executeQuery();
+        
+        DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
+        tblModel.setRowCount(0); // Clear existing rows
+        
+        while (rs.next()) {
+            String ID = rs.getString("content_id");
+            String Title = rs.getString("content_desc");
+            String Description = rs.getString("content_url");
+            // Add data to table model
+            String tbdata[] = {ID, Title, Description};
+            tblModel.addRow(tbdata);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-    if (sub == null || sub.isEmpty()) {
+    
+        if (sub == null || sub.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Pilih kursus terlebih dahulu!");
         return;
     }
@@ -403,7 +503,7 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
     ResultSet rs = null;
     try {
         con = getConnection();
-        String sql = "SELECT m.materi_id, m.materi_title, m.materi_desc, m.materi_sub_id " +
+        String sql = "SELECT m.materi_id, m.materi_title, m.materi_desc, m.materi_sub_id,s.sub_id " +
                            "FROM materi_tbl m " +
                            "JOIN subject_tbl s ON m.materi_sub_id = s.sub_id " +
                            "WHERE s.sub_name = ?";
@@ -417,9 +517,9 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
             String Title = rs.getString("Materi_title");
             String Description = rs.getString("Materi_desc");
             String Sub_id = rs.getString("Materi_sub_id");
-            
             String tbdata[] = {ID, Title, Description};
             tblModel.addRow(tbdata);
+            
         }
     } catch (Exception e) {
         e.printStackTrace();
@@ -436,17 +536,72 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
+     new Hapus().setVisible(true);
+     this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+     new Tambah().setVisible(true);
+     this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
      new TambahKursus().setVisible(true);
      this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+     new Edit().setVisible(true);
+     this.dispose();
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    if (sub == null || sub.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Pilih kursus terlebih dahulu!");
+        return;
+    }
+    new EditKursus().setVisible(true);
+    this.dispose();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+     if (sub == null || sub.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Pilih kursus terlebih dahulu!");
+        return;
+    }
+        Connection con = getConnection();
+        if (con != null) {
+            try {
+                String query = "DELETE FROM Subject_tbl WHERE Sub_id = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setString(1, currentCourseId);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Kursus berhasil dihapus!");
+                    new loginPageAdmin().setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "ID kursus tidak ditemukan.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Gagal menghapus kursus!");
+            } finally {
+                try {
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+     jButton4ActionPerformed(evt);
+    }//GEN-LAST:event_jButton12ActionPerformed
     
     /**
      * @param args the command line arguments
@@ -485,8 +640,9 @@ public class FrameGUIAdmin extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;

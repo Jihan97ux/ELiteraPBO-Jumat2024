@@ -6,16 +6,132 @@
 package elitera;
 
 import elitera.login.loginAs;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 /**
  *
  * @author user
  */
 public class TampilanMateri extends javax.swing.JFrame {
+     public static String currentMateriNama;
 
     /**
      * Creates new form TampilanMateri
      */
+    public ArrayList<String> getMateriBySubject(String materi_kursus_id) {
+    ArrayList<String> materis = new ArrayList<>();
+    Connection con = DBConnectionManager.getConnection();
+    if (con != null) {
+        try {
+            String query = "SELECT * FROM materi_tbl WHERE Materi_sub_id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, materi_kursus_id);
+            ResultSet rs = ps.executeQuery();
+            boolean found = false; // Gunakan flag untuk menandai apakah setidaknya satu mata pelajaran ditemukan
+            while (rs.next()) {
+                found = true;
+                materis.add(rs.getString("Materi_title"));
+                //JOptionPane.showMessageDialog(null, "Materi added: " + rs.getString("Materi_title"));
+            }
+            if (!found) { // Jika tidak ada mata pelajaran yang ditemukan, tampilkan pesan kesalahan
+                JOptionPane.showMessageDialog(this, "Tidak ada materi untuk kursus ini", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FrameGUI.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+    }
+    return materis;
+}
+
+    public void displayMateri(ArrayList<String> materis) {
+    System.out.println("Jumlah materi: " + materis.size());
+    jPanel2.setLayout(new BorderLayout()); 
+    jPanel2.setPreferredSize(new Dimension(841, 423));
+    jPanel2.setBackground(Color.WHITE);
+
+    JPanel labelPanel = new JPanel();
+    labelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    labelPanel.setBorder(new EmptyBorder(20, 20, 0, 0));
+    labelPanel.setBackground(Color.WHITE);
+    jPanel2.add(labelPanel, BorderLayout.NORTH);
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    buttonPanel.setBorder(new EmptyBorder(10, 20, 0, 0));
+    buttonPanel.setPreferredSize(new Dimension(723, 61 * materis.size())); // Mengubah ukuran panel berdasarkan jumlah materi
+    buttonPanel.setBackground(Color.WHITE);
+    jPanel2.add(buttonPanel, BorderLayout.CENTER); // Mengubah posisi panel ke CENTER
+
+    Color buttonTextColor = new Color(0, 0, 0);
+    Font buttonFont = new Font("Bookman Old Style", Font.BOLD, 14);
+    
+    for (String materi : materis) {
+        GradientButton materiButton = new GradientButton(materi);
+        materiButton.setForeground(buttonTextColor);
+        materiButton.setFont(buttonFont);
+        materiButton.setHorizontalTextPosition(JButton.CENTER);
+        materiButton.setVerticalTextPosition(JButton.BOTTOM); 
+        materiButton.setPreferredSize(new Dimension(723, 61)); // Mengubah ukuran button
+        materiButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                currentMateriNama = materi; // Set currentMateriId to the selected materi
+                TampilanKonten tampilanKonten = new TampilanKonten();
+                tampilanKonten.displayContent(currentMateriNama);
+                tampilanKonten.setVisible(true);
+                 
+            }
+        });
+        buttonPanel.add(materiButton);
+    }
+
+    jPanel2.revalidate();
+    jPanel2.repaint();
+}
+
+    
+    class GradientButton extends JButton {
+    public GradientButton(String text) {
+        super(text);
+        setContentAreaFilled(false); // Make the button background transparent
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        if (!isOpaque()) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            int width = getWidth();
+            int height = getHeight();
+            GradientPaint gradient = new GradientPaint(0, 0, Color.BLUE, 0, height, Color.CYAN);
+            g2.setPaint(gradient);
+            g2.fillRect(0, 0, width, height);
+            g2.dispose();
+        }
+        super.paintComponent(g);
+    }
+}
+
     public TampilanMateri() {
         initComponents();
     }
@@ -33,13 +149,7 @@ public class TampilanMateri extends javax.swing.JFrame {
         kGradientPanel1 = new keeptoo.KGradientPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        kGradientPanel2 = new keeptoo.KGradientPanel();
-        kGradientPanel3 = new keeptoo.KGradientPanel();
-        kGradientPanel4 = new keeptoo.KGradientPanel();
-        kGradientPanel5 = new keeptoo.KGradientPanel();
-        kGradientPanel6 = new keeptoo.KGradientPanel();
-        kGradientPanel7 = new keeptoo.KGradientPanel();
+        jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -54,15 +164,6 @@ public class TampilanMateri extends javax.swing.JFrame {
         jButton2.setForeground(new java.awt.Color(51, 102, 255));
         jButton2.setText("Student Status");
 
-        jButton1.setBackground(new java.awt.Color(255, 153, 0));
-        jButton1.setForeground(new java.awt.Color(102, 51, 255));
-        jButton1.setText("Masuk/Daftar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout kGradientPanel1Layout = new javax.swing.GroupLayout(kGradientPanel1);
         kGradientPanel1.setLayout(kGradientPanel1Layout);
         kGradientPanel1Layout.setHorizontalGroup(
@@ -72,9 +173,7 @@ public class TampilanMateri extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 504, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         kGradientPanel1Layout.setVerticalGroup(
             kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -84,94 +183,21 @@ public class TampilanMateri extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kGradientPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27))
         );
 
-        kGradientPanel2.setkEndColor(new java.awt.Color(255, 153, 51));
-        kGradientPanel2.setkStartColor(new java.awt.Color(51, 102, 255));
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        javax.swing.GroupLayout kGradientPanel2Layout = new javax.swing.GroupLayout(kGradientPanel2);
-        kGradientPanel2.setLayout(kGradientPanel2Layout);
-        kGradientPanel2Layout.setHorizontalGroup(
-            kGradientPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 723, Short.MAX_VALUE)
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 841, Short.MAX_VALUE)
         );
-        kGradientPanel2Layout.setVerticalGroup(
-            kGradientPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
-        );
-
-        kGradientPanel3.setkEndColor(new java.awt.Color(255, 153, 51));
-        kGradientPanel3.setkStartColor(new java.awt.Color(51, 102, 255));
-
-        javax.swing.GroupLayout kGradientPanel3Layout = new javax.swing.GroupLayout(kGradientPanel3);
-        kGradientPanel3.setLayout(kGradientPanel3Layout);
-        kGradientPanel3Layout.setHorizontalGroup(
-            kGradientPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 723, Short.MAX_VALUE)
-        );
-        kGradientPanel3Layout.setVerticalGroup(
-            kGradientPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 61, Short.MAX_VALUE)
-        );
-
-        kGradientPanel4.setkEndColor(new java.awt.Color(255, 153, 51));
-        kGradientPanel4.setkStartColor(new java.awt.Color(51, 102, 255));
-
-        javax.swing.GroupLayout kGradientPanel4Layout = new javax.swing.GroupLayout(kGradientPanel4);
-        kGradientPanel4.setLayout(kGradientPanel4Layout);
-        kGradientPanel4Layout.setHorizontalGroup(
-            kGradientPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        kGradientPanel4Layout.setVerticalGroup(
-            kGradientPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
-        );
-
-        kGradientPanel5.setkEndColor(new java.awt.Color(255, 153, 51));
-        kGradientPanel5.setkStartColor(new java.awt.Color(51, 102, 255));
-
-        javax.swing.GroupLayout kGradientPanel5Layout = new javax.swing.GroupLayout(kGradientPanel5);
-        kGradientPanel5.setLayout(kGradientPanel5Layout);
-        kGradientPanel5Layout.setHorizontalGroup(
-            kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        kGradientPanel5Layout.setVerticalGroup(
-            kGradientPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
-        );
-
-        kGradientPanel6.setkEndColor(new java.awt.Color(255, 153, 51));
-        kGradientPanel6.setkStartColor(new java.awt.Color(51, 102, 255));
-
-        javax.swing.GroupLayout kGradientPanel6Layout = new javax.swing.GroupLayout(kGradientPanel6);
-        kGradientPanel6.setLayout(kGradientPanel6Layout);
-        kGradientPanel6Layout.setHorizontalGroup(
-            kGradientPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        kGradientPanel6Layout.setVerticalGroup(
-            kGradientPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
-        );
-
-        kGradientPanel7.setkEndColor(new java.awt.Color(255, 153, 51));
-        kGradientPanel7.setkStartColor(new java.awt.Color(51, 102, 255));
-
-        javax.swing.GroupLayout kGradientPanel7Layout = new javax.swing.GroupLayout(kGradientPanel7);
-        kGradientPanel7.setLayout(kGradientPanel7Layout);
-        kGradientPanel7Layout.setHorizontalGroup(
-            kGradientPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        kGradientPanel7Layout.setVerticalGroup(
-            kGradientPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 57, Short.MAX_VALUE)
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 423, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -180,40 +206,17 @@ public class TampilanMateri extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(kGradientPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(kGradientPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(kGradientPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(kGradientPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(kGradientPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(kGradientPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(140, 140, 140))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                    .addContainerGap(153, Short.MAX_VALUE)
-                    .addComponent(kGradientPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(141, 141, 141)))
+                .addGap(84, 84, 84)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(86, 93, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(kGradientPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 147, Short.MAX_VALUE)
-                .addComponent(kGradientPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(kGradientPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(kGradientPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(kGradientPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(kGradientPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(161, 161, 161)
-                    .addComponent(kGradientPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(398, Short.MAX_VALUE)))
+                .addGap(37, 37, 37)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(74, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -228,12 +231,8 @@ public class TampilanMateri extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new loginAs().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -271,16 +270,10 @@ public class TampilanMateri extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private keeptoo.KGradientPanel kGradientPanel1;
-    private keeptoo.KGradientPanel kGradientPanel2;
-    private keeptoo.KGradientPanel kGradientPanel3;
-    private keeptoo.KGradientPanel kGradientPanel4;
-    private keeptoo.KGradientPanel kGradientPanel5;
-    private keeptoo.KGradientPanel kGradientPanel6;
-    private keeptoo.KGradientPanel kGradientPanel7;
     // End of variables declaration//GEN-END:variables
 }

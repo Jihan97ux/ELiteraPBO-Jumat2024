@@ -10,6 +10,7 @@ import static elitera.DBConnectionManager.getConnection;
 import elitera.FrameGUI;
 import elitera.admin.FrameGUIAdmin;
 import elitera.login.SignAsStudent;
+import elitera.login.loginPageAdmin;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -206,7 +207,7 @@ public class TambahKursus extends javax.swing.JFrame {
     String Sub_name = name.getText();
     String Sub_desc = desc.getText();
     String Sub_jurusan = jurusan.getText();
-    String Stud_teach = SessionManager.getTeachId();;
+    String Stud_teach = SessionManager.getTeachId();
 
     if (Sub_id == null || Sub_id.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Masukkan ID kursus terlebih dahulu!");
@@ -245,7 +246,7 @@ public class TambahKursus extends javax.swing.JFrame {
             
             ps.executeUpdate();
             JOptionPane.showMessageDialog(this, "Data berhasil disimpan!");
-            new FrameGUIAdmin().setVisible(true);
+            new loginPageAdmin().setVisible(true);
             this.dispose();
         } catch (SQLException ex) {
             Logger.getLogger(TambahKursus.class.getName()).log(Level.SEVERE, null, ex);
